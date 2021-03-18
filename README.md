@@ -48,14 +48,18 @@ I primarily used three classification algorithms: Logistic Regression, Random Fo
 **Binary labels**
 1. Pitcher throws more offspeed and/ or might not have overpowering fastball
     * For this scenario I would recommend my logistic regression model that is dummied and grid searches for the weighted F1 metric. This model reduces the false positives caused by over-predicting fastballs. However, as a result, it also has more false negatives (offspeed label when should have been fastball label). Therefore, this model would be more useful against a pitcher who relies on his fastball less. 
+    
 ![Figure-1](./files/download-8.png)
-**Figure 1: Logistic regression optimized for the F-1 score had the most baanced predictions. It limited the number of false positives (falsely predicting fastball) the most.**
+
+**Figure 1: Logistic regression optimized for the F-1 score (0.6334) had the most balanced predictions. While its accuracy was not optimized (0.601), it limited the number of false positives (falsely predicting fastball) the most.**
     
     
 2. Pitcher that Relies Heavily on Fastballs
-    * The random forest model has the highest accuracy and a higher F1 score than the logistic regression with the next nearest accuracy. Therefore, I would recommend the random forest model to best describe the scenario where the pitcher throws a high proportion of fastballs. 
+    * The random forest model has the highest accuracy and a higher F1 score than the logistic regression with the next nearest accuracy. Therefore, I would recommend the random forest model to best describe the scenario where the pitcher throws a high proportion of fastballs.
+    
 ![Figure-2](./files/download-9.png)
-**Figure 2: My Random Forest models performed the best for piters who frequently throw fastballs. While it has more false positives than the previous figure, it has the highest accuracy and limits the number of false positives compared to the logistic regression with the highest accuracy**
+
+**Figure 2: My Random Forest models performed the best for piters who frequently throw fastballs. While it has more false positives than the previous figure, it has the highest accuracy (0.6242) and limits the number of false positives compared to the logistic regression with the highest accuracy**
 
 ## Next Steps and Future Work
 
