@@ -1,5 +1,7 @@
 # Predicting the Next Pitch: Utilizing Machine Learning to Predict the Next Pitch Thrown
 
+## [Presentation](https://docs.google.com/presentation/d/1y4YjQAgXK8ih6pTRteLluqH_tNTX0nqILFNmsQQ99ls/edit?usp=sharing)
+
 ## Problem Statement
 
 MLB scouting departments have become heavily reliant on data analysis since the advent of Moneyball. With the added data being provided by Statcast - a high-speed, high-accuracy, automated tool developed to analyze player movements and athletic abilities in Major League Baseball - teams are now looking to get that extra edge from Machine Learning. The goal of this project is to utilize statcast data and machine learning algorithms from the 2018 MLB season to predict a pitcher's next pitch based on the pitcher's repertoire and the situational context under which the pitch is being thrown. Furthermore, this predictive modeling could be used to identify undervalued players as potential trade targets for the upcoming 2021 season. 
@@ -12,21 +14,65 @@ While I am not necessarily motivated by the Astros scoundrelous ways, this scand
 One thing that became apparent quickly: predicting pitches is quite difficult. Pitchers are intentionally random to throw off the hitters timing and gain the upperhand. However, patterns did emerge in certain situations that might be helpful to hitters in their preparation. As one of the all-time greats Hank Aaron once said: **“Guessing what the pitcher is going to throw is 80 percent of being a successful hitter. The other 20 percent is just execution.”**
 
 ## Executive Summary
-An executive summary:
+
 ### Goal
 The goal of this study is to predict the next pitch based on the pitcher's repertoire, hitter's previous season batting average, and the situational context under which the pitch is being thrown. 
 
 ### Data Collection
 I downloaded data from Baseball Savant's Statcast website utilizing the baseball_scraper python package. 
 
+### Data Description
+As described above, I am hoping to use the situation of the game to predict the next pitch. Situational data is included in the statcast data originally includes the count when the pitch is thrown, if there are runners on base, handedness of pitcher and batter, and the score of the game.
 
-What are your metrics?
-What were your findings?
-What risks/limitations/assumptions affect these findings?
-Summarize your statistical analysis, including:
-implementation
-evaluation
-inference
+To capture situational data without leaking information to the model, I looked at the information from the previous pitch thrown to the batter. This led to my next topic which is 
+
+#### Feature Engineering
+To not leak data to the model, I needed to gather data from the previous pitch as a feature for the prediction in the current pitch. I collected the number of each pitch thrown to the batter up to that point, I specified the previous pitch as its own feature. In addition I tried to capture the result of the previous at-bat using weighted-on-base average (which calculates a score of the previous at-bat based on the event that occurred), but I noticed inconsistencies in the data that caused me to throw out that feature.
+
+In addition to pre-pitch data, I wanted to take into account historical information about both the hitter and the pitcher. In doing so, I created features that measured the proportion of breaking balls thrown by the pitcher in 2018, proportion of fastballs thrown by the pitcher in 2018, the hitters weighted on-base average in 2018, and the hitter's average lauch speed in 2018. 
+
+### Modeling
+I primarily used three classification algorithms: Logistic Regression, Random Forest, and K-Nearest Neighbors. The logistic and random forest algorithms ended up being the most effective in terms of accuracy, precision, and recall. 
+
+
+# Recommendations and Conclusions
+
+## Would not Rely on Multiclass Model
+
+1. All of the models are within error of the baseline and do not accurately predict the changeup. Therefore, I would recommend investing more in the models predicting binary "offspeed" or "fastball" initially before investing more heavily into the multiclass models.   
+
+2. The Houston Astros cheating scandal only relayed whether the next pitch was going to be a fastball or offspeed pitch. Therefore, there is a clear advantage gained from even having that level of distinction for the hitter. 
+
+## Best Models for Various Scenarios
+
+**Binary labels**
+1. Pitcher throws more offspeed and/ or might not have overpowering fastball
+    * For this scenario I would recommend my logistic regression model that is dummied and grid searches for the weighted F1 metric. This model reduces the false positives caused by over-predicting fastballs. However, as a result, it also has more false negatives (offspeed label when should have been fastball label). Therefore, this model would be more useful against a pitcher who relies on his fastball less. 
+![Figure-1](./files/download-8.png)
+**Figure 1: Logistic regression optimized for the F-1 score had the most baanced predictions. It limited the number of false positives (falsely predicting fastball) the most.**
+    
+    
+2. Pitcher that Relies Heavily on Fastballs
+    * The random forest model has the highest accuracy and a higher F1 score than the logistic regression with the next nearest accuracy. Therefore, I would recommend the random forest model to best describe the scenario where the pitcher throws a high proportion of fastballs. 
+![Figure-2](./files/download-9.png)
+**Figure 2: My Random Forest models performed the best for piters who frequently throw fastballs. While it has more false positives than the previous figure, it has the highest accuracy and limits the number of false positives compared to the logistic regression with the highest accuracy**
+
+## Next Steps and Future Work
+
+In the future, I hope to capture more granular trends when predicting a pitch. 
+* Need to account for how pitcher last pitched against the team he is currently facing.
+    * Divisional opponents play each other frequently and therefore the pitcher has to mix up the pitches he throws to batters in consecutive outings. 
+    * Specific data about how the batter hit against certain pitches in the pitcher's arsenal the last time they played.
+* Create team models, or get even more granular and build models for specific pitchers. 
+    * Use these models as the basis for transfer learning or just have useful models for frequently faced pitchers (divisional opponents)
+* Create many small models to predict a pitch in certain situations (for example, build model specific to 2 strike count with runners in scoring position)
+* Account for pitcher hot streaks
+    * Pitcher mentality is a huge facet of their confidence in throwing certain pitches. Therefore, if a pitcher has been accurate and performing well over the previous few games, he will have the confidence to mix up his pitch sequences more. 
+* Account for catcher calling pitches
+    * Certain catchers might have tendencies for calling for certain pitches in a specific situation. Maybe can pick up a signal on catcher influence
+* Account for weather
+    * Having a solid grip on the ball is incredibly important when deciding which pitch to throw. Therefore, need to account for weather conditions and possibly even stadium influences (is it a pitcher's park) that would help generate more signal in my data. 
+
 
 ### Modified DataFrame Data Dictionary
 
